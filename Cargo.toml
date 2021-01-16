@@ -1,6 +1,6 @@
 [package]
 name = "adblock-wasm"
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Rajaram Gaunker <rajarams@gmail.com>"]
 edition = "2018"
 

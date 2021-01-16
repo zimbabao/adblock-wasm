@@ -7,7 +7,7 @@ use once_cell::sync::Lazy;
 // 1. Figure out how to manage context and object and share
 // 2. Reduce unsafe blocks. Current it works fine because JS is single threaded
 //    we are expected to see only serialized call from browser.
-static mut engine: Lazy<Vec<Engine>> = Lazy::new(|| {
+static mut ENGINE: Lazy<Vec<Engine>> = Lazy::new(|| {
     let m = vec![];
     m
 });
@@ -41,19 +41,19 @@ fn create_new_engine(rules_string: &str) -> Engine {
 pub fn init(rules_string: &str) {
     unsafe {
         let e = create_new_engine(rules_string);
-        engine.clear();
-        engine.push(e);
+        ENGINE.clear();
+        ENGINE.push(e);
     }
 }
 
 #[wasm_bindgen]
 pub fn check(url: &str, init: &str, req_type: &str) -> bool {
     unsafe {
-        if engine.len() == 0 {
+        if ENGINE.len() == 0 {
             return false;
         }
-        for i in 0..engine.len() {
-            let result = engine[i].check_network_urls(url, init, req_type);
+        for i in 0..ENGINE.len() {
+            let result = ENGINE[i].check_network_urls(url, init, req_type);
             if result.matched {
                 return true;
             }
@@ -66,7 +66,7 @@ pub fn check(url: &str, init: &str, req_type: &str) -> bool {
 #[wasm_bindgen]
 pub fn add_rules(rules_string: &str) -> bool {
     unsafe {
-        engine.push(create_new_engine(rules_string));
+        ENGINE.push(create_new_engine(rules_string));
     }
     return true;
 }
